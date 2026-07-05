@@ -1,51 +1,109 @@
 import os
-import requests
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+from dotenv import load_dotenv
+from google import genai
 
-URL = "https://openrouter.ai/api/v1/chat/completions"
+from ai.prompts import (
+    RESUME_REVIEW_PROMPT,
+    JD_MATCH_PROMPT,
+    SKILL_GAP_PROMPT,
+    COVER_LETTER_PROMPT
+)
+
+load_dotenv()
+
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
 
 
-def review_resume(resume_text, ats_score):
+# ==========================================================
+# Generic Gemini Function
+# ==========================================================
 
-    prompt = f"""
-You are an expert ATS recruiter.
+def ask_gemini(prompt: str):
 
-Resume:
+    try:
 
-{resume_text}
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
 
-ATS Score:
+        return response.text
 
-{ats_score}
+    except Exception as e:
 
-Give:
+        return f"""
+# ❌ Gemini Error
 
-1. Strengths
-2. Weaknesses
-3. Suggestions
-4. Final Verdict
-
-Keep the response concise and professional.
+{e}
 """
 
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json",
-    }
 
-    payload = {
-        "model": "openai/gpt-4.1-mini",
-        "messages": [
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    }
+# ==========================================================
+# AI Resume Review
+# ==========================================================
 
-    response = requests.post(URL, headers=headers, json=payload, timeout=60)
+def review_resume(resume_text):
 
-    data = response.json()
+    prompt = RESUME_REVIEW_PROMPT.format(
+        resume_text
+    )
 
-    return data["choices"][0]["message"]["content"]
+    return ask_gemini(prompt)
+
+
+# ==========================================================
+# AI JD Matcher
+# ==========================================================
+
+def review_jd_match(
+    resume_text,
+    job_description
+):
+
+    prompt = JD_MATCH_PROMPT.format(
+        resume_text,
+        job_description
+    )
+
+    return ask_gemini(prompt)
+
+
+# ==========================================================
+# AI Skill Gap Analyzer
+# ==========================================================
+
+def analyze_skill_gap(
+    resume_text,
+    job_description
+):
+
+    prompt = SKILL_GAP_PROMPT.format(
+        resume_text,
+        job_description
+    )
+
+    return ask_gemini(prompt)
+
+
+# ==========================================================
+# AI Cover Letter Generator
+# ==========================================================
+
+def generate_cover_letter(
+    resume_text,
+    company,
+    role,
+    job_description
+):
+
+    prompt = COVER_LETTER_PROMPT.format(
+        resume_text,
+        company,
+        role,
+        job_description
+    )
+
+    return ask_gemini(prompt)

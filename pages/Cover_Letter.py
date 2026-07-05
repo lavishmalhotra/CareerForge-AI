@@ -1,18 +1,18 @@
 import streamlit as st
 
+from ai.llm import generate_cover_letter
 from utils.session import has_resume, get_resume
-from ai.llm import review_jd_match
 from database.db import save_history
 from utils.pdf_generator import create_pdf
 
 st.set_page_config(
-    page_title="JD Matcher",
-    page_icon="💼",
+    page_title="Cover Letter Generator",
+    page_icon="📄",
     layout="wide"
 )
 
-st.title("💼 AI Job Description Matcher")
-st.caption("Compare your Resume with any Job Description using AI.")
+st.title("📄 AI Cover Letter Generator")
+st.caption("Generate an ATS Friendly Cover Letter using AI.")
 
 # ==========================================================
 # Resume Check
@@ -32,8 +32,6 @@ resume = get_resume()
 
 resume_text = resume["Raw_Text"]
 
-skills = resume["Skills"]
-
 # ==========================================================
 # Resume Summary
 # ==========================================================
@@ -49,115 +47,128 @@ with c1:
 
 with c2:
 
-    st.write(f"**💻 Skills:** {len(skills)}")
+    st.write(f"**💻 Skills:** {len(resume['Skills'])}")
     st.write(f"**📂 Projects:** {len(resume['Projects'])}")
 
 st.divider()
 
 # ==========================================================
-# Skills
+# Input
 # ==========================================================
 
-st.subheader("💻 Detected Skills")
+company = st.text_input(
+    "🏢 Company Name"
+)
 
-if skills:
-
-    cols = st.columns(3)
-
-    for i, skill in enumerate(skills):
-
-        with cols[i % 3]:
-
-            st.success(skill)
-
-else:
-
-    st.warning("No skills detected.")
-
-st.divider()
-
-# ==========================================================
-# Job Description
-# ==========================================================
+role = st.text_input(
+    "💼 Job Role"
+)
 
 job_description = st.text_area(
-
-    "📋 Paste Job Description",
-
-    height=300,
-
+    "📋 Job Description",
+    height=250,
     placeholder="Paste complete Job Description here..."
-
 )
 
 # ==========================================================
-# Analyze
+# Generate
 # ==========================================================
 
 if st.button(
-
-    "🚀 Analyze Resume",
-
+    "🚀 Generate Cover Letter",
     use_container_width=True
-
 ):
 
-    if job_description.strip() == "":
+    if (
+        company.strip() == ""
+        or role.strip() == ""
+        or job_description.strip() == ""
+    ):
 
-        st.error("Please paste a Job Description.")
+        st.error("Please fill all fields.")
 
         st.stop()
 
     with st.spinner(
-
-        "🤖 AI is comparing your Resume..."
-
+        "🤖 AI is generating your Cover Letter..."
     ):
 
-        report = review_jd_match(
-
+        letter = generate_cover_letter(
             resume_text,
-
+            company,
+            role,
             job_description
-
         )
 
     save_history(
-
-        report_type="JD Matcher",
-
-        title=resume["Name"],
-
-        content=report
-
+        report_type="Cover Letter",
+        title=f"{company} - {role}",
+        content=letter
     )
 
-    st.success("✅ Report Saved")
+    st.success("✅ Cover Letter Saved")
 
     st.divider()
 
-    st.subheader("🤖 AI JD Match Report")
+    st.subheader("📄 Generated Cover Letter")
 
-    st.markdown(report)
+    st.markdown(letter)
         # ======================================================
     # PDF Download
     # ======================================================
 
     pdf_file = create_pdf(
-        "AI JD Match Report",
-        report,
-        "jd_match_report.pdf"
+        "AI Cover Letter",
+        letter,
+        "cover_letter.pdf"
     )
 
     with open(pdf_file, "rb") as file:
 
         st.download_button(
-            label="⬇ Download JD Match Report",
+            label="⬇ Download Cover Letter",
             data=file,
-            file_name="JD_Match_Report.pdf",
+            file_name="Cover_Letter.pdf",
             mime="application/pdf",
             use_container_width=True
         )
+
+    # ======================================================
+    # Copy Button
+    # ======================================================
+
+    st.divider()
+
+    st.subheader("📋 Copy Cover Letter")
+
+    st.code(
+        letter,
+        language="text"
+    )
+
+    st.info(
+        "💡 You can copy the cover letter from the box above and paste it into your job application."
+    )
+
+# ==========================================================
+# Tips
+# ==========================================================
+
+st.divider()
+
+st.subheader("💼 Cover Letter Tips")
+
+st.success("""
+✔ Keep your cover letter to one page.
+
+✔ Mention the company name.
+
+✔ Highlight your most relevant skills.
+
+✔ Mention projects related to the role.
+
+✔ End with a professional closing.
+""")
 
 # ==========================================================
 # Footer
@@ -166,5 +177,5 @@ if st.button(
 st.divider()
 
 st.caption(
-    "🚀 CareerForge AI • AI Powered Resume vs Job Description Analysis"
+    "🚀 CareerForge AI • AI Powered Cover Letter Generator"
 )

@@ -1,0 +1,53 @@
+/* Background */
+.stApp {
+    background-color: #0E1117;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background: #111827;
+}
+
+/* Buttons */
+.stButton > button {
+    width: 100%;
+    border-radius: 12px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.stButton > button:hover {
+    background: #1d4ed8;
+}
+
+/* Metrics */
+[data-testid="stMetric"] {
+    background: #1f2937;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #374151;
+}
+
+/* Success Box */
+.stSuccess {
+    border-radius: 12px;
+}
+
+/* Info Box */
+.stInfo {
+    border-radius: 12px;
+}
+
+/* Warning */
+.stWarning {
+    border-radius: 12px;
+}
+
+/* Text Inputs */
+input,
+textarea {
+    border-radius: 10px !important;
+}

@@ -1,18 +1,18 @@
 import streamlit as st
 
+from ai.llm import analyze_skill_gap
 from utils.session import has_resume, get_resume
-from ai.llm import review_jd_match
 from database.db import save_history
 from utils.pdf_generator import create_pdf
 
 st.set_page_config(
-    page_title="JD Matcher",
-    page_icon="💼",
+    page_title="Skill Gap Analyzer",
+    page_icon="📚",
     layout="wide"
 )
 
-st.title("💼 AI Job Description Matcher")
-st.caption("Compare your Resume with any Job Description using AI.")
+st.title("📚 AI Skill Gap Analyzer")
+st.caption("Analyze missing skills between your Resume and Job Description.")
 
 # ==========================================================
 # Resume Check
@@ -72,7 +72,7 @@ if skills:
 
 else:
 
-    st.warning("No skills detected.")
+    st.warning("No Skills Detected")
 
 st.divider()
 
@@ -96,7 +96,7 @@ job_description = st.text_area(
 
 if st.button(
 
-    "🚀 Analyze Resume",
+    "🚀 Analyze Skill Gap",
 
     use_container_width=True
 
@@ -110,11 +110,11 @@ if st.button(
 
     with st.spinner(
 
-        "🤖 AI is comparing your Resume..."
+        "🤖 AI is analyzing your Skill Gap..."
 
     ):
 
-        report = review_jd_match(
+        report = analyze_skill_gap(
 
             resume_text,
 
@@ -124,7 +124,7 @@ if st.button(
 
     save_history(
 
-        report_type="JD Matcher",
+        report_type="Skill Gap",
 
         title=resume["Name"],
 
@@ -136,7 +136,7 @@ if st.button(
 
     st.divider()
 
-    st.subheader("🤖 AI JD Match Report")
+    st.subheader("📚 AI Skill Gap Report")
 
     st.markdown(report)
         # ======================================================
@@ -144,20 +144,35 @@ if st.button(
     # ======================================================
 
     pdf_file = create_pdf(
-        "AI JD Match Report",
+        "AI Skill Gap Report",
         report,
-        "jd_match_report.pdf"
+        "skill_gap_report.pdf"
     )
 
     with open(pdf_file, "rb") as file:
 
         st.download_button(
-            label="⬇ Download JD Match Report",
+            label="⬇ Download Skill Gap Report",
             data=file,
-            file_name="JD_Match_Report.pdf",
+            file_name="Skill_Gap_Report.pdf",
             mime="application/pdf",
             use_container_width=True
         )
+
+# ==========================================================
+# Career Tips
+# ==========================================================
+
+st.divider()
+
+st.subheader("💡 Career Tips")
+
+st.info("""
+- Compare your resume with every Job Description before applying.
+- Learn the high-priority missing skills first.
+- Build at least one project using every important missing technology.
+- Update your resume after learning new skills.
+""")
 
 # ==========================================================
 # Footer
@@ -166,5 +181,5 @@ if st.button(
 st.divider()
 
 st.caption(
-    "🚀 CareerForge AI • AI Powered Resume vs Job Description Analysis"
+    "🚀 CareerForge AI • AI Powered Skill Gap Analysis"
 )
