@@ -175,29 +175,25 @@ streamlit run app.py
 
 ---
 
-# 📷 Screenshots
+## 🏠 Home Page
 
-> Add screenshots here after deployment.
+![Home](screenshots/home.png)
 
-### 🏠 Home Page
+## 📊 Dashboard
 
-<img src="screenshots/home.png" width="100%">
+![Dashboard](screenshots/dashboard.png)
 
-### 📊 Dashboard
+## 📄 Resume Analyzer
 
-<img src="screenshots/dashboard.png" width="100%">
+![Resume](screenshots/resume.png)
 
-### 📄 Resume Analyzer
+## 🎯 JD Matcher
 
-<img src="screenshots/resume.png" width="100%">
+![JD Matcher](screenshots/jdmatcher.png)
 
-### 🎯 JD Matcher
+## 📝 Cover Letter Generator
 
-<img src="screenshots/jdmatcher.png" width="100%">
-
-### 📝 Cover Letter Generator
-
-<img src="screenshots/coverletter.png" width="100%">
+![Cover Letter](screenshots/coverletter.png)
 
 ---
 
